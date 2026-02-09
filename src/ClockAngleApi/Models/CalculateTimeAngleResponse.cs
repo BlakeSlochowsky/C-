@@ -1,5 +1,5 @@
 public class CalculateTimeAngleResponse
-{
+{ 
     public int Hour { get; set; }
     public int Minute { get; set; }
     public double AngleSum { get; set; }

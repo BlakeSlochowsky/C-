@@ -1,5 +1,5 @@
 public class ClockAngleServiceTests
-{
+{ 
     private readonly ClockAngleService _service;
 
     public ClockAngleServiceTests()

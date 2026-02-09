@@ -1,5 +1,5 @@
 public class ClockAngleService : IClockAngleService
-{
+{ 
     public double CalculateAngleSum(int hour, int minute)
     {
         int normalizedHour = hour % 12;

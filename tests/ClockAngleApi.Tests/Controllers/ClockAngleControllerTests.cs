@@ -1,5 +1,5 @@
 public class ClockAngleControllerTests
-{
+{ 
     private readonly Moq.Mock<IClockAngleService> _mockService;
     private readonly ClockAngleController _controller;
 

@@ -1,5 +1,5 @@
 public class ClockAngleController : Microsoft.AspNetCore.Mvc.ControllerBase
-{
+{ 
     private readonly IClockAngleService _clockAngleService;
 
     public ClockAngleController(IClockAngleService clockAngleService)

@@ -1,5 +1,5 @@
 public class CalculateTimeAngleRequestTests
-{
+{ 
     [Xunit.Fact]
     public void Parse_WithTimeString_ReturnsCorrectHourAndMinute()
     {

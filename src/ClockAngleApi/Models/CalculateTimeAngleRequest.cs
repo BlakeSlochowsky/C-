@@ -1,5 +1,5 @@
 public class CalculateTimeAngleRequest
-{
+{ 
     [System.ComponentModel.DataAnnotations.RegularExpression(@"^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$", ErrorMessage = "Time must be in HH:mm format (24-hour)")]
     public string? Time { get; set; }
 
