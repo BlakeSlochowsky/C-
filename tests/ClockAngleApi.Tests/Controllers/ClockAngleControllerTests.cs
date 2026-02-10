@@ -1,88 +1,100 @@
+using ClockAngleApi.Controllers;
+using ClockAngleApi.Models;
+using ClockAngleApi.Services;
+using FluentAssertions;
+using Microsoft.AspNetCore.Mvc;
+using Moq;
+using Xunit;
+
+namespace ClockAngleApi.Tests.Controllers;
+
 public class ClockAngleControllerTests
-{ 
-    private readonly Moq.Mock<IClockAngleService> _mockService;
+{
+    private readonly Mock<IClockAngleService> _mockService;
+    private readonly Mock<ILogger<ClockAngleController>> _mockLogger;
     private readonly ClockAngleController _controller;
 
     public ClockAngleControllerTests()
     {
-        _mockService = new Moq.Mock<IClockAngleService>();
-        _controller = new ClockAngleController(_mockService.Object);
+        _mockService = new Mock<IClockAngleService>();
+        _mockLogger = new Mock<ILogger<ClockAngleController>>();
+        _controller = new ClockAngleController(_mockService.Object, _mockLogger.Object);
     }
 
-    [Xunit.Fact]
+    [Fact]
     public void CalculateTimeAngle_WithTimeString_ReturnsOkWithCorrectResponse()
     {
-        var request = new CalculateTimeAngleRequest { Time = "03:00" };
+        var requestWithTimeString = new CalculateTimeAngleRequest { Time = "03:00" };
         _mockService.Setup(clockAngleService => clockAngleService.CalculateAngleSum(3, 0)).Returns(90.0);
 
-        var actionResult = _controller.CalculateTimeAngle(request);
+        var actionResultReturned = _controller.CalculateTimeAngle(requestWithTimeString);
 
-        var okActionResult = Xunit.Assert.IsType<Microsoft.AspNetCore.Mvc.OkObjectResult>(actionResult);
-        var response = Xunit.Assert.IsType<CalculateTimeAngleResponse>(okActionResult.Value);
-        Xunit.Assert.Equal(3, response.Hour);
-        Xunit.Assert.Equal(0, response.Minute);
-        Xunit.Assert.Equal(90.0, response.AngleSum);
-        Xunit.Assert.Equal(90.0, response.HourHandAngle);
-        Xunit.Assert.Equal(0.0, response.MinuteHandAngle);
+        var okActionResultFromController = actionResultReturned.Should().BeOfType<OkObjectResult>().Subject;
+        var responseBodyFromEndpoint = okActionResultFromController.Value.Should().BeOfType<CalculateTimeAngleResponse>().Subject;
+        responseBodyFromEndpoint.Hour.Should().Be(3);
+        responseBodyFromEndpoint.Minute.Should().Be(0);
+        responseBodyFromEndpoint.AngleSum.Should().Be(90.0);
+        responseBodyFromEndpoint.HourHandAngle.Should().Be(90.0);
+        responseBodyFromEndpoint.MinuteHandAngle.Should().Be(0.0);
     }
 
-    [Xunit.Fact]
+    [Fact]
     public void CalculateTimeAngle_WithHourAndMinute_ReturnsOkWithCorrectResponse()
     {
-        var request = new CalculateTimeAngleRequest { Hour = 3, Minute = 15 };
+        var requestWithHourAndMinute = new CalculateTimeAngleRequest { Hour = 3, Minute = 15 };
         _mockService.Setup(clockAngleService => clockAngleService.CalculateAngleSum(3, 15)).Returns(187.5);
 
-        var actionResult = _controller.CalculateTimeAngle(request);
+        var actionResultReturned = _controller.CalculateTimeAngle(requestWithHourAndMinute);
 
-        var okActionResult = Xunit.Assert.IsType<Microsoft.AspNetCore.Mvc.OkObjectResult>(actionResult);
-        var response = Xunit.Assert.IsType<CalculateTimeAngleResponse>(okActionResult.Value);
-        Xunit.Assert.Equal(3, response.Hour);
-        Xunit.Assert.Equal(15, response.Minute);
-        Xunit.Assert.Equal(187.5, response.AngleSum);
+        var okActionResultFromController = actionResultReturned.Should().BeOfType<OkObjectResult>().Subject;
+        var responseBodyFromEndpoint = okActionResultFromController.Value.Should().BeOfType<CalculateTimeAngleResponse>().Subject;
+        responseBodyFromEndpoint.Hour.Should().Be(3);
+        responseBodyFromEndpoint.Minute.Should().Be(15);
+        responseBodyFromEndpoint.AngleSum.Should().Be(187.5);
     }
 
-    [Xunit.Fact]
+    [Fact]
     public void CalculateTimeAngle_WithNullRequest_ReturnsBadRequest()
     {
-        var actionResult = _controller.CalculateTimeAngle(null);
-        Xunit.Assert.IsType<Microsoft.AspNetCore.Mvc.BadRequestObjectResult>(actionResult);
+        var actionResultReturned = _controller.CalculateTimeAngle(null);
+        actionResultReturned.Should().BeOfType<BadRequestObjectResult>();
     }
 
-    [Xunit.Fact]
+    [Fact]
     public void CalculateTimeAngle_WithInvalidRequest_ReturnsBadRequest()
     {
-        var request = new CalculateTimeAngleRequest();
-        var actionResult = _controller.CalculateTimeAngle(request);
-        Xunit.Assert.IsType<Microsoft.AspNetCore.Mvc.BadRequestObjectResult>(actionResult);
+        var requestWithNoInput = new CalculateTimeAngleRequest();
+        var actionResultReturned = _controller.CalculateTimeAngle(requestWithNoInput);
+        actionResultReturned.Should().BeOfType<BadRequestObjectResult>();
     }
 
-    [Xunit.Fact]
+    [Fact]
     public void CalculateTimeAngle_WithInvalidTimeFormat_ReturnsBadRequest()
     {
-        var request = new CalculateTimeAngleRequest { Time = "invalid" };
+        var requestWithInvalidTime = new CalculateTimeAngleRequest { Time = "invalid" };
         _controller.ModelState.AddModelError("Time", "Invalid format");
 
-        var actionResult = _controller.CalculateTimeAngle(request);
+        var actionResultReturned = _controller.CalculateTimeAngle(requestWithInvalidTime);
 
-        Xunit.Assert.IsType<Microsoft.AspNetCore.Mvc.BadRequestObjectResult>(actionResult);
+        actionResultReturned.Should().BeOfType<BadRequestObjectResult>();
     }
 
-    [Xunit.Fact]
+    [Fact]
     public void CalculateTimeAngle_CallsServiceWithCorrectParameters()
     {
-        var request = new CalculateTimeAngleRequest { Time = "15:30" };
+        var requestWithTimeString = new CalculateTimeAngleRequest { Time = "15:30" };
         _mockService.Setup(clockAngleService => clockAngleService.CalculateAngleSum(15, 30)).Returns(255.0);
 
-        _controller.CalculateTimeAngle(request);
+        _controller.CalculateTimeAngle(requestWithTimeString);
 
-        _mockService.Verify(clockAngleService => clockAngleService.CalculateAngleSum(15, 30), Moq.Times.Once);
+        _mockService.Verify(clockAngleService => clockAngleService.CalculateAngleSum(15, 30), Times.Once);
     }
 
-    [Xunit.Fact]
-    public void CalculateTimeAngle_WithServiceException_ReturnsBadRequest()
+    [Fact]
+    public void CalculateTimeAngle_WithInvalidTimeParse_ReturnsBadRequest()
     {
-        var request = new CalculateTimeAngleRequest { Time = "invalid" };
-        var actionResult = _controller.CalculateTimeAngle(request);
-        Xunit.Assert.IsType<Microsoft.AspNetCore.Mvc.BadRequestObjectResult>(actionResult);
+        var requestWithInvalidTime = new CalculateTimeAngleRequest { Time = "invalid" };
+        var actionResultReturned = _controller.CalculateTimeAngle(requestWithInvalidTime);
+        actionResultReturned.Should().BeOfType<BadRequestObjectResult>();
     }
 }

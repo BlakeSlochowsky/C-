@@ -1,10 +1,17 @@
+namespace ClockAngleApi.Services;
+
 public class ClockAngleService : IClockAngleService
-{ 
-    public double CalculateAngleSum(int hour, int minute)
+{
+    public double CalculateAngleSum(int hourValue, int minuteValue)
     {
-        int normalizedHour = hour % 12;
-        double hourAngle = (normalizedHour * 30.0) + (minute * 0.5);
-        double minuteAngle = minute * 6.0;
-        return hourAngle + minuteAngle;
+        int hourOnTwelveHourClock = hourValue % 12;
+        double degreesPerHourOnClockFace = 30.0;
+        double degreesHourHandMovesPerMinute = 0.5;
+        double degreesMinuteHandMovesPerMinute = 6.0;
+
+        double hourHandAngleInDegrees = (hourOnTwelveHourClock * degreesPerHourOnClockFace) + (minuteValue * degreesHourHandMovesPerMinute);
+        double minuteHandAngleInDegrees = minuteValue * degreesMinuteHandMovesPerMinute;
+
+        return hourHandAngleInDegrees + minuteHandAngleInDegrees;
     }
 }

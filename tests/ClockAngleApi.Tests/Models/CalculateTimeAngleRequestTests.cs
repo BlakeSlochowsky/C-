@@ -1,111 +1,117 @@
+using ClockAngleApi.Models;
+using FluentAssertions;
+using Xunit;
+
+namespace ClockAngleApi.Tests.Models;
+
 public class CalculateTimeAngleRequestTests
-{ 
-    [Xunit.Fact]
+{
+    [Fact]
     public void Parse_WithTimeString_ReturnsCorrectHourAndMinute()
     {
-        var request = new CalculateTimeAngleRequest { Time = "03:00" };
-        var (parsedHour, parsedMinute) = request.Parse();
-        Xunit.Assert.Equal(3, parsedHour);
-        Xunit.Assert.Equal(0, parsedMinute);
+        var requestWithTimeString = new CalculateTimeAngleRequest { Time = "03:00" };
+        var (parsedHourValue, parsedMinuteValue) = requestWithTimeString.Parse();
+        parsedHourValue.Should().Be(3);
+        parsedMinuteValue.Should().Be(0);
     }
 
-    [Xunit.Fact]
+    [Fact]
     public void Parse_WithTimeStringTwentyFourHour_ReturnsCorrectHourAndMinute()
     {
-        var request = new CalculateTimeAngleRequest { Time = "15:30" };
-        var (parsedHour, parsedMinute) = request.Parse();
-        Xunit.Assert.Equal(15, parsedHour);
-        Xunit.Assert.Equal(30, parsedMinute);
+        var requestWithTimeString = new CalculateTimeAngleRequest { Time = "15:30" };
+        var (parsedHourValue, parsedMinuteValue) = requestWithTimeString.Parse();
+        parsedHourValue.Should().Be(15);
+        parsedMinuteValue.Should().Be(30);
     }
 
-    [Xunit.Fact]
+    [Fact]
     public void Parse_WithHourAndMinute_ReturnsCorrectValues()
     {
-        var request = new CalculateTimeAngleRequest { Hour = 3, Minute = 15 };
-        var (parsedHour, parsedMinute) = request.Parse();
-        Xunit.Assert.Equal(3, parsedHour);
-        Xunit.Assert.Equal(15, parsedMinute);
+        var requestWithHourAndMinute = new CalculateTimeAngleRequest { Hour = 3, Minute = 15 };
+        var (parsedHourValue, parsedMinuteValue) = requestWithHourAndMinute.Parse();
+        parsedHourValue.Should().Be(3);
+        parsedMinuteValue.Should().Be(15);
     }
 
-    [Xunit.Fact]
+    [Fact]
     public void Parse_WithTimeString_ThrowsWhenInvalidFormat()
     {
-        var request = new CalculateTimeAngleRequest { Time = "invalid" };
-        Xunit.Assert.Throws<System.ArgumentException>(() => request.Parse());
+        var requestWithInvalidTime = new CalculateTimeAngleRequest { Time = "invalid" };
+        Assert.Throws<ArgumentException>(() => requestWithInvalidTime.Parse());
     }
 
-    [Xunit.Fact]
+    [Fact]
     public void Parse_WithTimeString_ThrowsWhenHourOutOfRange()
     {
-        var request = new CalculateTimeAngleRequest { Time = "24:00" };
-        Xunit.Assert.Throws<System.ArgumentException>(() => request.Parse());
+        var requestWithHourOutOfRange = new CalculateTimeAngleRequest { Time = "24:00" };
+        Assert.Throws<ArgumentException>(() => requestWithHourOutOfRange.Parse());
     }
 
-    [Xunit.Fact]
+    [Fact]
     public void Parse_WithTimeString_ThrowsWhenMinuteOutOfRange()
     {
-        var request = new CalculateTimeAngleRequest { Time = "12:60" };
-        Xunit.Assert.Throws<System.ArgumentException>(() => request.Parse());
+        var requestWithMinuteOutOfRange = new CalculateTimeAngleRequest { Time = "12:60" };
+        Assert.Throws<ArgumentException>(() => requestWithMinuteOutOfRange.Parse());
     }
 
-    [Xunit.Fact]
+    [Fact]
     public void Parse_WithNeitherTimeNorHourMinute_ThrowsArgumentException()
     {
-        var request = new CalculateTimeAngleRequest();
-        Xunit.Assert.Throws<System.ArgumentException>(() => request.Parse());
+        var requestWithNoInput = new CalculateTimeAngleRequest();
+        Assert.Throws<ArgumentException>(() => requestWithNoInput.Parse());
     }
 
-    [Xunit.Fact]
+    [Fact]
     public void IsValid_WithTimeString_ReturnsTrue()
     {
-        var request = new CalculateTimeAngleRequest { Time = "03:00" };
-        bool isRequestValid = request.IsValid();
-        Xunit.Assert.True(isRequestValid);
+        var requestWithTimeString = new CalculateTimeAngleRequest { Time = "03:00" };
+        bool isRequestValid = requestWithTimeString.IsValid();
+        isRequestValid.Should().BeTrue();
     }
 
-    [Xunit.Fact]
+    [Fact]
     public void IsValid_WithHourAndMinute_ReturnsTrue()
     {
-        var request = new CalculateTimeAngleRequest { Hour = 3, Minute = 0 };
-        bool isRequestValid = request.IsValid();
-        Xunit.Assert.True(isRequestValid);
+        var requestWithHourAndMinute = new CalculateTimeAngleRequest { Hour = 3, Minute = 0 };
+        bool isRequestValid = requestWithHourAndMinute.IsValid();
+        isRequestValid.Should().BeTrue();
     }
 
-    [Xunit.Fact]
+    [Fact]
     public void IsValid_WithOnlyHour_ReturnsFalse()
     {
-        var request = new CalculateTimeAngleRequest { Hour = 3 };
-        bool isRequestValid = request.IsValid();
-        Xunit.Assert.False(isRequestValid);
+        var requestWithOnlyHour = new CalculateTimeAngleRequest { Hour = 3 };
+        bool isRequestValid = requestWithOnlyHour.IsValid();
+        isRequestValid.Should().BeFalse();
     }
 
-    [Xunit.Fact]
+    [Fact]
     public void IsValid_WithOnlyMinute_ReturnsFalse()
     {
-        var request = new CalculateTimeAngleRequest { Minute = 30 };
-        bool isRequestValid = request.IsValid();
-        Xunit.Assert.False(isRequestValid);
+        var requestWithOnlyMinute = new CalculateTimeAngleRequest { Minute = 30 };
+        bool isRequestValid = requestWithOnlyMinute.IsValid();
+        isRequestValid.Should().BeFalse();
     }
 
-    [Xunit.Fact]
+    [Fact]
     public void IsValid_WithEmptyRequest_ReturnsFalse()
     {
-        var request = new CalculateTimeAngleRequest();
-        bool isRequestValid = request.IsValid();
-        Xunit.Assert.False(isRequestValid);
+        var requestWithNoInput = new CalculateTimeAngleRequest();
+        bool isRequestValid = requestWithNoInput.IsValid();
+        isRequestValid.Should().BeFalse();
     }
 
-    [Xunit.Theory]
-    [Xunit.InlineData("00:00", 0, 0)]
-    [Xunit.InlineData("12:00", 12, 0)]
-    [Xunit.InlineData("23:59", 23, 59)]
-    [Xunit.InlineData("09:15", 9, 15)]
-    [Xunit.InlineData("15:45", 15, 45)]
-    public void Parse_WithVariousTimeStrings_ReturnsCorrectValues(string inputTimeString, int expectedHour, int expectedMinute)
+    [Theory]
+    [InlineData("00:00", 0, 0)]
+    [InlineData("12:00", 12, 0)]
+    [InlineData("23:59", 23, 59)]
+    [InlineData("09:15", 9, 15)]
+    [InlineData("15:45", 15, 45)]
+    public void Parse_WithVariousTimeStrings_ReturnsCorrectValues(string inputTimeString, int expectedHourValue, int expectedMinuteValue)
     {
-        var request = new CalculateTimeAngleRequest { Time = inputTimeString };
-        var (parsedHour, parsedMinute) = request.Parse();
-        Xunit.Assert.Equal(expectedHour, parsedHour);
-        Xunit.Assert.Equal(expectedMinute, parsedMinute);
+        var requestWithTimeString = new CalculateTimeAngleRequest { Time = inputTimeString };
+        var (parsedHourValue, parsedMinuteValue) = requestWithTimeString.Parse();
+        parsedHourValue.Should().Be(expectedHourValue);
+        parsedMinuteValue.Should().Be(expectedMinuteValue);
     }
 }
